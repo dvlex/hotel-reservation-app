@@ -1,0 +1,26 @@
+{
+    "name": "React Dev Container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "angular",
+    "forwardPorts": [4200],
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/zsh"
+            },
+            "extensions": [
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint",
+                "formulahendry.auto-rename-tag",
+                "christian-kohler.path-intellisense",
+                "aaron-bond.better-comments",
+                "eamodio.gitlens",
+                "christian-kohler.npm-intellisense",
+                "Angular.ng-template",
+                "tal7aouy.rainbow-bracket",
+                "oderwat.indent-rainbow"
+            ]
+        }
+    }
+}
