@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Reservation } from '../models/reservation';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -7,10 +9,14 @@ import { Reservation } from '../models/reservation';
 export class ReservationService {
   private reservations: Reservation[] = [];
 
-  constructor() {
-    const storedReservations = localStorage.getItem('reservations');
-    this.reservations = storedReservations ? JSON.parse(storedReservations) : [];
-  }
+  // Uncomment the following lines to use localStorage
+  //constructor() {
+  //  const storedReservations = localStorage.getItem('reservations');
+  //  this.reservations = storedReservations ? JSON.parse(storedReservations) : [];
+  //}
+  private apiUrl = 'http://192.168.1.72:3000';
+
+  constructor(private httpClient: HttpClient) {}
 
   private generateUUID(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -20,35 +26,52 @@ export class ReservationService {
     });
   }
 
-  getReservations(): Reservation[] {
-    return this.reservations;
+  getReservations(): Observable<Reservation[]> {
+    // return this.reservations;
+    return this.httpClient.get<Reservation[]>(this.apiUrl + '/reservations');
   }
 
-  getReservation(id: string): Reservation | undefined {
-    return this.reservations.find((reservation) => reservation.id === id);
+  getReservation(id: string): Observable<Reservation> | undefined {
+    return this.httpClient.get<Reservation>(this.apiUrl + '/reservation/' + id);
+    //return this.reservations.find((reservation) => reservation.id === id);
   }
 
-  addReservation(reservation: Reservation): void {
+  addReservation(reservation: Reservation): Observable<void> {
     reservation.id = this.generateUUID();
-    this.reservations.push(reservation);
-    localStorage.setItem('reservations', JSON.stringify(this.reservations));
-  }
-
-  deleteReservation(reservation: Reservation): void {
-    const index = this.reservations.indexOf(reservation);
-    if (index > -1) {
-      this.reservations.splice(index, 1);
-      localStorage.setItem('reservations', JSON.stringify(this.reservations));
-    }
-  }
-
-  updateReservation(updateReservationReservation: Reservation): void {
-    const index = this.reservations.findIndex(
-      (reservation) => reservation.id === updateReservationReservation.id
+    return this.httpClient.post<void>(
+      this.apiUrl + '/reservation',
+      reservation
     );
-    if (index > -1) {
-      this.reservations[index] = updateReservationReservation;
-      localStorage.setItem('reservations', JSON.stringify(this.reservations));
-    }
+    // this.reservations.push(reservation);
+    // localStorage.setItem('reservations', JSON.stringify(this.reservations));
+  }
+
+  deleteReservation(reservation: Reservation): Observable<void> {
+    return this.httpClient.delete<void>(
+      this.apiUrl + '/reservation/' + reservation.id
+    );
+
+    //const index = this.reservations.indexOf(reservation);
+    //if (index > -1) {
+    //  this.reservations.splice(index, 1);
+    // localStorage.setItem('reservations', JSON.stringify(this.reservations));
+    //}
+  }
+
+  updateReservation(
+    updateReservationReservation: Reservation
+  ): Observable<void> {
+    return this.httpClient.put<void>(
+      this.apiUrl + '/reservation/' + updateReservationReservation.id,
+      updateReservationReservation
+    );
+
+    //const index = this.reservations.findIndex(
+    //  (reservation) => reservation.id === updateReservationReservation.id
+    //);
+    //if (index > -1) {
+    //  this.reservations[index] = updateReservationReservation;
+    // localStorage.setItem('reservations', JSON.stringify(this.reservations));
+    //}
   }
 }
