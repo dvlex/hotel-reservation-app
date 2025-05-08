@@ -12,6 +12,14 @@ export class ReservationService {
     this.reservations = storedReservations ? JSON.parse(storedReservations) : [];
   }
 
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
   getReservations(): Reservation[] {
     return this.reservations;
   }
@@ -21,7 +29,7 @@ export class ReservationService {
   }
 
   addReservation(reservation: Reservation): void {
-    reservation.id = crypto.randomUUID();
+    reservation.id = this.generateUUID();
     this.reservations.push(reservation);
     localStorage.setItem('reservations', JSON.stringify(this.reservations));
   }
